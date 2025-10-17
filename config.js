@@ -8,7 +8,7 @@ module.exports = {
   port: 4200, //- Port of the API and Dashboard
   scopes: ["identify", "guilds", "applications.commands"], //- Discord OAuth2 Scopes
   inviteScopes: ["bot", "applications.commands"], // Invite link scopes
-  serverDeafen: true, //- If you want bot to stay deafened
+  serverDeafen: false, //- If you want bot to stay deafened
   defaultVolume: 100, //- Sets the default volume of the bot, You can change this number anywhere from 1 to 100
   supportServer: "https://discord.gg/sbySMS7m3v", //- Support Server Link
   Issues: "https://github.com/SudhanPlayz/Discord-MusicBot/issues", //- Bug Report Link
@@ -18,6 +18,8 @@ module.exports = {
   autoQueue: true, //- When set to true, related songs will automatically be added to the queue
   autoPause: false, //- When set to true, music will automatically be paused if everyone leaves the voice channel
   autoLeave: false, //- When set to true, the bot will automatically leave when no one is in the voice channel (can be combined with 24/7 to always be in voice channel until everyone leaves; if 24/7 is on disconnectTime will add a disconnect delay after everyone leaves.)
+  defaultVoiceChannel: "1346157984182702206", //- Voice channel ID where bot auto-joins on startup (leave empty to disable)
+  defaultTextChannel: "", //- Text channel ID for sending messages (optional, leave empty to disable)
   debug: false, //- Debug mode
   cookieSecret: "CodingWithSudhan is epic", //- Cookie Secret
   website: process.env.WEBSITE_URL || "http://localhost:4200", //- without the / at the end

@@ -51,6 +51,7 @@ module.exports = {
       {
         name: "Cool Stuff", //- Status Text
         type: "STREAMING", //- PLAYING, WATCHING, LISTENING, STREAMING
+        url: "https://www.twitch.tv/discord", //- Streaming URL (required for purple status)
       },
     ],
   },

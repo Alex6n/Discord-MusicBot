@@ -61,30 +61,30 @@ module.exports = {
     });
 
     if (res.loadType === "LOAD_FAILED") {
-      if (!player.queue.current) {
-        player.destroy();
-      }
+      // Don't destroy player - stay connected even on error
       await interaction
         .editReply({
           embeds: [
             new MessageEmbed()
               .setColor("RED")
-              .setDescription("There was an error while searching"),
+              .setDescription(
+                "There was an error while searching. Try again or use a different query."
+              ),
           ],
         })
         .catch(this.warn);
     }
 
     if (res.loadType === "NO_MATCHES") {
-      if (!player.queue.current) {
-        player.destroy();
-      }
+      // Don't destroy player - stay connected even when no results
       await interaction
         .editReply({
           embeds: [
             new MessageEmbed()
               .setColor("RED")
-              .setDescription("No results were found"),
+              .setDescription(
+                "No results were found. Try a different search term."
+              ),
           ],
         })
         .catch(this.warn);

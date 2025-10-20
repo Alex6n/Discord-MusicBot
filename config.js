@@ -20,6 +20,13 @@ module.exports = {
   autoLeave: false, //- When set to true, the bot will automatically leave when no one is in the voice channel (can be combined with 24/7 to always be in voice channel until everyone leaves; if 24/7 is on disconnectTime will add a disconnect delay after everyone leaves.)
   defaultVoiceChannel: "1346157984182702206", //- Voice channel ID where bot auto-joins on startup (leave empty to disable)
   defaultTextChannel: "", //- Text channel ID for sending messages (optional, leave empty to disable)
+
+  // Spotify Configuration (Get credentials from https://developer.spotify.com/dashboard)
+  spotify: {
+    clientId: process.env.SPOTIFY_CLIENT_ID || "", //- Spotify Client ID
+    clientSecret: process.env.SPOTIFY_CLIENT_SECRET || "", //- Spotify Client Secret
+  },
+
   debug: false, //- Debug mode
   cookieSecret: "CodingWithSudhan is epic", //- Cookie Secret
   website: process.env.WEBSITE_URL || "http://localhost:4200", //- without the / at the end
@@ -42,8 +49,8 @@ module.exports = {
     status: "online", //- You can have online, idle, dnd and invisible (Note: invisible makes people think the bot is offline)
     activities: [
       {
-        name: "Music", //- Status Text
-        type: "LISTENING", //- PLAYING, WATCHING, LISTENING, STREAMING
+        name: "Cool Stuff", //- Status Text
+        type: "STREAMING", //- PLAYING, WATCHING, LISTENING, STREAMING
       },
     ],
   },

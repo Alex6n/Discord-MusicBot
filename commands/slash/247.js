@@ -79,6 +79,7 @@ const command = new SlashCommand()
       }`
     );
 
+    // If disabling 24/7 mode and nothing is playing/queued, leave the channel
     if (!player.playing && player.queue.totalSize === 0 && twentyFourSeven) {
       player.destroy();
     }

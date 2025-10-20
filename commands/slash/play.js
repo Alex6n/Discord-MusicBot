@@ -55,11 +55,11 @@ const command = new SlashCommand()
     });
 
     let query = options.getString("query", true);
-    
+
     // Debug: Log search details
     console.log(`[PLAY] Searching for: ${query}`);
-    console.log(`[PLAY] Is Spotify URL: ${query.includes('spotify.com')}`);
-    
+    console.log(`[PLAY] Is Spotify URL: ${query.includes("spotify.com")}`);
+
     let res = await player.search(query, interaction.user).catch((err) => {
       client.error(`[PLAY] Search failed for query: ${query}`);
       console.error("[PLAY] Full search error:", err);
@@ -72,7 +72,7 @@ const command = new SlashCommand()
 
     console.log(`[PLAY] Search result loadType: ${res.loadType}`);
     console.log(`[PLAY] Tracks found: ${res.tracks?.length || 0}`);
-    
+
     if (res.exception) {
       console.error("[PLAY] Exception in response:", res.exception);
     }
@@ -81,7 +81,7 @@ const command = new SlashCommand()
       // Don't destroy player - stay connected even on error
       const errorMsg = res.error || "Unknown error occurred";
       console.error(`[PLAY] LOAD_FAILED: ${errorMsg}`);
-      
+
       await interaction
         .editReply({
           embeds: [
@@ -99,7 +99,7 @@ const command = new SlashCommand()
     if (res.loadType === "NO_MATCHES") {
       // Don't destroy player - stay connected even when no results
       console.warn(`[PLAY] NO_MATCHES for query: ${query}`);
-      
+
       await interaction
         .editReply({
           embeds: [
@@ -116,26 +116,33 @@ const command = new SlashCommand()
 
     if (res.loadType === "TRACK_LOADED" || res.loadType === "SEARCH_RESULT") {
       const track = res.tracks[0];
-      
+
       // Debug: Log track info
-      console.log(`[PLAY] Track object:`, JSON.stringify({
-        title: track.title,
-        author: track.author,
-        uri: track.uri,
-        identifier: track.identifier,
-        isSeekable: track.isSeekable,
-        isStream: track.isStream,
-        duration: track.duration,
-        thumbnail: track.thumbnail,
-        isUnresolved: track.isUnresolved
-      }, null, 2));
-      
+      console.log(
+        `[PLAY] Track object:`,
+        JSON.stringify(
+          {
+            title: track.title,
+            author: track.author,
+            uri: track.uri,
+            identifier: track.identifier,
+            isSeekable: track.isSeekable,
+            isStream: track.isStream,
+            duration: track.duration,
+            thumbnail: track.thumbnail,
+            isUnresolved: track.isUnresolved,
+          },
+          null,
+          2
+        )
+      );
+
       player.queue.add(track);
 
       if (!player.playing && !player.paused && !player.queue.size) {
         player.play();
       }
-      
+
       // For Spotify/unresolved tracks, use author + title format
       let title;
       if (track.author && track.title) {
@@ -145,14 +152,14 @@ const command = new SlashCommand()
       } else {
         title = "Unknown Track";
       }
-      
+
       title = escapeMarkdown(title);
       title = title.replace(/\]/g, "");
       title = title.replace(/\[/g, "");
-      
+
       // Handle URI safely - Spotify tracks won't have URI until resolved
       let trackUri = track.uri || null;
-      
+
       let addQueueEmbed = new MessageEmbed()
         .setColor(client.config.embedColor)
         .setAuthor({ name: "Added to queue", iconURL: client.config.iconURL })
@@ -173,13 +180,15 @@ const command = new SlashCommand()
                   secondsDecimalDigits: 0,
                 })}\`
 `
-              : "\`Unknown\`",
+              : "`Unknown`",
             inline: true,
           }
         );
 
       try {
-        const thumbnail = track.displayThumbnail ? track.displayThumbnail("maxresdefault") : (track.thumbnail || null);
+        const thumbnail = track.displayThumbnail
+          ? track.displayThumbnail("maxresdefault")
+          : track.thumbnail || null;
         if (thumbnail) {
           addQueueEmbed.setThumbnail(thumbnail);
         }

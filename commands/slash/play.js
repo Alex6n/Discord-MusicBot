@@ -55,30 +55,51 @@ const command = new SlashCommand()
     });
 
     let query = options.getString("query", true);
+    
+    // Debug: Log search details
+    console.log(`[PLAY] Searching for: ${query}`);
+    console.log(`[PLAY] Is Spotify URL: ${query.includes('spotify.com')}`);
+    
     let res = await player.search(query, interaction.user).catch((err) => {
-      client.error(err);
+      client.error(`[PLAY] Search failed for query: ${query}`);
+      console.error("[PLAY] Full search error:", err);
+      console.error("[PLAY] Error stack:", err.stack);
       return {
         loadType: "LOAD_FAILED",
+        error: err.message,
       };
     });
 
+    console.log(`[PLAY] Search result loadType: ${res.loadType}`);
+    console.log(`[PLAY] Tracks found: ${res.tracks?.length || 0}`);
+    
+    if (res.exception) {
+      console.error("[PLAY] Exception in response:", res.exception);
+    }
+
     if (res.loadType === "LOAD_FAILED") {
       // Don't destroy player - stay connected even on error
+      const errorMsg = res.error || "Unknown error occurred";
+      console.error(`[PLAY] LOAD_FAILED: ${errorMsg}`);
+      
       await interaction
         .editReply({
           embeds: [
             new MessageEmbed()
               .setColor("RED")
               .setDescription(
-                "There was an error while searching. Try again or use a different query."
+                `There was an error while searching.\n\`\`\`${errorMsg}\`\`\`\nTry again or use a different query.`
               ),
           ],
         })
         .catch(this.warn);
+      return;
     }
 
     if (res.loadType === "NO_MATCHES") {
       // Don't destroy player - stay connected even when no results
+      console.warn(`[PLAY] NO_MATCHES for query: ${query}`);
+      
       await interaction
         .editReply({
           embeds: [
@@ -90,22 +111,52 @@ const command = new SlashCommand()
           ],
         })
         .catch(this.warn);
+      return;
     }
 
     if (res.loadType === "TRACK_LOADED" || res.loadType === "SEARCH_RESULT") {
-      player.queue.add(res.tracks[0]);
+      const track = res.tracks[0];
+      
+      // Debug: Log track info
+      console.log(`[PLAY] Track object:`, JSON.stringify({
+        title: track.title,
+        author: track.author,
+        uri: track.uri,
+        identifier: track.identifier,
+        isSeekable: track.isSeekable,
+        isStream: track.isStream,
+        duration: track.duration,
+        thumbnail: track.thumbnail,
+        isUnresolved: track.isUnresolved
+      }, null, 2));
+      
+      player.queue.add(track);
 
       if (!player.playing && !player.paused && !player.queue.size) {
         player.play();
       }
-      var title = escapeMarkdown(res.tracks[0].title);
-      var title = title.replace(/\]/g, "");
-      var title = title.replace(/\[/g, "");
+      
+      // For Spotify/unresolved tracks, use author + title format
+      let title;
+      if (track.author && track.title) {
+        title = `${track.author} - ${track.title}`;
+      } else if (track.title) {
+        title = track.title;
+      } else {
+        title = "Unknown Track";
+      }
+      
+      title = escapeMarkdown(title);
+      title = title.replace(/\]/g, "");
+      title = title.replace(/\[/g, "");
+      
+      // Handle URI safely - Spotify tracks won't have URI until resolved
+      let trackUri = track.uri || null;
+      
       let addQueueEmbed = new MessageEmbed()
         .setColor(client.config.embedColor)
         .setAuthor({ name: "Added to queue", iconURL: client.config.iconURL })
-        .setDescription(`[${title}](${res.tracks[0].uri})` || "No Title")
-        .setURL(res.tracks[0].uri)
+        .setDescription(trackUri ? `[${title}](${trackUri})` : title)
         .addFields(
           {
             name: "Added by",
@@ -114,22 +165,28 @@ const command = new SlashCommand()
           },
           {
             name: "Duration",
-            value: res.tracks[0].isStream
+            value: track.isStream
               ? `\`LIVE 🔴 \``
-              : `\`${client.ms(res.tracks[0].duration, {
+              : track.duration > 0
+              ? `\`${client.ms(track.duration, {
                   colonNotation: true,
                   secondsDecimalDigits: 0,
-                })}\``,
+                })}\`
+`
+              : "\`Unknown\`",
             inline: true,
           }
         );
 
       try {
-        addQueueEmbed.setThumbnail(
-          res.tracks[0].displayThumbnail("maxresdefault")
-        );
+        const thumbnail = track.displayThumbnail ? track.displayThumbnail("maxresdefault") : (track.thumbnail || null);
+        if (thumbnail) {
+          addQueueEmbed.setThumbnail(thumbnail);
+        }
       } catch (err) {
-        addQueueEmbed.setThumbnail(res.tracks[0].thumbnail);
+        if (track.thumbnail) {
+          addQueueEmbed.setThumbnail(track.thumbnail);
+        }
       }
 
       if (player.queue.totalSize > 1) {

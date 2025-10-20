@@ -1,6 +1,13 @@
 //JotaroKujo0525 note, this is a deed that i should've done a long time ago
 require('dotenv').config()
 
+// Debug: Check if environment variables are loaded
+console.log("=== Environment Variables Check ===");
+console.log("Bot Token:", process.env.token ? "✓ Loaded" : "✗ Missing");
+console.log("Spotify Client ID:", process.env.SPOTIFY_CLIENT_ID ? "✓ Loaded" : "✗ Missing");
+console.log("Spotify Client Secret:", process.env.SPOTIFY_CLIENT_SECRET ? "✓ Loaded" : "✗ Missing");
+console.log("===================================\n");
+
 const DiscordMusicBot = require("./lib/DiscordMusicBot");
 const { exec } = require("child_process");
 

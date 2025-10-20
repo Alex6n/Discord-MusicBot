@@ -49,7 +49,7 @@ module.exports = {
     status: "online", //- You can have online, idle, dnd and invisible (Note: invisible makes people think the bot is offline)
     activities: [
       {
-        name: "Cool Stuff", //- Status Text
+        name: "the echo", //- Status Text (will change dynamically when playing music)
         type: "STREAMING", //- PLAYING, WATCHING, LISTENING, STREAMING
         url: "https://www.twitch.tv/discord", //- Streaming URL (required for purple status)
       },

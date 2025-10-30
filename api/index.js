@@ -10,96 +10,108 @@ const DiscordMusicBot = require("../lib/DiscordMusicBot");
 const router = require("./router");
 
 passport.serializeUser(function (user, done) {
-	done(null, user);
+  done(null, user);
 });
 
 passport.deserializeUser(function (obj, done) {
-	done(null, obj);
+  done(null, obj);
 });
 
 class Server extends EventEmitter {
-	/**
-	 * Create server ;-;
-	 * @param {DiscordMusicBot} client
-	 */
-	constructor(client) {
-		super();
-		this.client = client;
-		getConfig().then(this.init.bind(this));
-	}
+  /**
+   * Create server ;-;
+   * @param {DiscordMusicBot} client
+   */
+  constructor(client) {
+    super();
+    this.client = client;
+    getConfig().then(this.init.bind(this));
+  }
 
-	init(conf) {
-		this.config = conf;
-		this.app = express();
-		
-		this.app.use(express.static(join(__dirname, "..", "public")));
-		
-		// Static Routes for scripts
-		const dist = join(__dirname, "..", "dashboard", "out", "_next")
-		
-		this.app.use("/_next", express.static(dist));
+  init(conf) {
+    this.config = conf;
+    this.app = express();
 
-		// Session and Passport
-		this.app.use(session({
-			resave: false,
-			saveUninitialized: false,
-			secret: this.config.cookieSecret,
-			cookie: {
-				secure: this.config.website.startsWith("https://"),
-				sameSite: true,
-			},
-		}));
+    this.app.use(express.static(join(__dirname, "..", "public")));
 
-		this.initPassport();
+    // Static Routes for scripts
+    const dist = join(__dirname, "..", "dashboard", "out", "_next");
 
-		this.app.use(router);
+    this.app.use("/_next", express.static(dist));
 
-		//API
-		fs.readdir(join(__dirname, "routes"), (err, files) => {
-			if (err) {
-				return console.log(err);
-			}
-			files.forEach((file) => {
-				this.app.use(
-					"/api/" + file.split(".")[0],
-					require(join(__dirname, "routes") + "/" + file),
-				);
-			});
-		});
+    // Session and Passport
+    this.app.use(
+      session({
+        resave: false,
+        saveUninitialized: false,
+        secret: this.config.cookieSecret,
+        cookie: {
+          secure: this.config.website.startsWith("https://"),
+          sameSite: true,
+        },
+      })
+    );
 
-		this.listen();
-	}
-	
-	initPassport() {
-		this.app.use(passport.initialize());
+    this.initPassport();
 
-		const strategy = new DiscordStrategy(
-			{
-				clientID: this.config.clientId,
-				clientSecret: this.config.clientSecret,
-				callbackURL: this.config.website + "/api/callback",
-				scope: this.config.scopes.filter(a => !a.startsWith("app")),
-				scopeSeparator: " ",
-			},
-			function (accessToken, refreshToken, profile, done) {
-				const data = {
-					accessToken,
-					refreshToken,
-					profile,
-				};
+    this.app.use(router);
 
-				return done(null, data);
-			},
-		);
-		passport.use(strategy);
+    //API
+    fs.readdir(join(__dirname, "routes"), (err, files) => {
+      if (err) {
+        return console.log(err);
+      }
+      files.forEach((file) => {
+        this.app.use(
+          "/api/" + file.split(".")[0],
+          require(join(__dirname, "routes") + "/" + file)
+        );
+      });
+    });
 
-		this.app.use(passport.session());
-	}
+    this.listen();
+  }
 
-	listen() {
-		this.app.listen(this.config.port);
-		console.log("[SERVER] Listening on port:", this.config.port);
-	}
+  initPassport() {
+    this.app.use(passport.initialize());
+
+    // Only initialize Discord OAuth if clientId and clientSecret are properly configured
+    if (!this.config.clientId || !this.config.clientSecret) {
+      console.warn(
+        "[API] Discord OAuth not configured - dashboard login will not work"
+      );
+      console.warn("[API] Set clientId and clientSecret in .env or config.js");
+      this.app.use(passport.session());
+      return;
+    }
+
+    const strategy = new DiscordStrategy(
+      {
+        clientID: this.config.clientId,
+        clientSecret: this.config.clientSecret,
+        callbackURL: this.config.website + "/api/callback",
+        scope: this.config.scopes.filter((a) => !a.startsWith("app")),
+        scopeSeparator: " ",
+      },
+      function (accessToken, refreshToken, profile, done) {
+        const data = {
+          accessToken,
+          refreshToken,
+          profile,
+        };
+
+        return done(null, data);
+      }
+    );
+    passport.use(strategy);
+
+    this.app.use(passport.session());
+  }
+
+  listen() {
+    this.app.listen(this.config.port);
+    console.log("[SERVER] Listening on port:", this.config.port);
+  }
 }
 
 module.exports = Server;

@@ -9,7 +9,7 @@ module.exports = {
   scopes: ["identify", "guilds", "applications.commands"], //- Discord OAuth2 Scopes
   inviteScopes: ["bot", "applications.commands"], // Invite link scopes
   serverDeafen: false, //- If you want bot to stay deafened
-  defaultVolume: 100, //- Sets the default volume of the bot, You can change this number anywhere from 1 to 100
+  defaultVolume: 35, //- Sets the default volume of the bot, You can change this number anywhere from 1 to 100
   supportServer: "https://discord.gg/sbySMS7m3v", //- Support Server Link
   Issues: "https://github.com/SudhanPlayz/Discord-MusicBot/issues", //- Bug Report Link
   permissions: 277083450689, //- Bot Inviting Permissions

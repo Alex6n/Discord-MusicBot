@@ -93,12 +93,32 @@ module.exports = async (client, interaction) => {
           volume: client.config.defaultVolume,
         });
         player.connect();
+        client.log(
+          `[PLAY_SAVED] Created new player in ${targetGuild.name} for ${userVoiceChannel.name}`
+        );
       } else if (player.voiceChannel !== userVoiceChannel.id) {
-        // Player exists but user is in a different channel
-        return interaction.reply({
-          content: `❌ | I'm already playing in <#${player.voiceChannel}>! Please join that channel or wait until I'm done there.`,
-          ephemeral: true,
-        });
+        // Player exists in a different channel - check if we should move or reject
+        const botVoiceChannel = targetGuild.channels.cache.get(
+          player.voiceChannel
+        );
+        const membersInBotChannel = botVoiceChannel?.members.filter(
+          (m) => !m.user.bot
+        ).size;
+
+        // If the bot's current channel is empty (no human users), move to user's channel
+        if (!membersInBotChannel || membersInBotChannel === 0) {
+          player.setVoiceChannel(userVoiceChannel.id);
+          player.connect();
+          client.log(
+            `[PLAY_SAVED] Moved bot from empty channel to ${userVoiceChannel.name}`
+          );
+        } else {
+          // Bot is actively being used in another channel
+          return interaction.reply({
+            content: `❌ | I'm already playing in <#${player.voiceChannel}>! Please join that channel or wait until I'm done there.`,
+            ephemeral: true,
+          });
+        }
       }
 
       // Search and add the track

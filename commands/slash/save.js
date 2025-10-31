@@ -1,5 +1,5 @@
 const SlashCommand = require("../../lib/SlashCommand");
-const { MessageEmbed } = require("discord.js");
+const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const prettyMilliseconds = require("pretty-ms");
 
 const command = new SlashCommand()
@@ -35,6 +35,17 @@ const command = new SlashCommand()
 			});
 		}
 		
+		const track = player.queue.current;
+		
+		// Create button to play the saved song
+		const playButton = new MessageActionRow().addComponents(
+			new MessageButton()
+				.setCustomId(`play_saved:${track.uri || track.url}:${interaction.user.id}`)
+				.setLabel("Play Now")
+				.setEmoji("▶️")
+				.setStyle("PRIMARY")
+		);
+		
 		const sendtoDmEmbed = new MessageEmbed()
 			.setColor(client.config.embedColor)
 			.setAuthor({
@@ -42,19 +53,19 @@ const command = new SlashCommand()
 				iconURL: `${ interaction.user.displayAvatarURL({ dynamic: true }) }`,
 			})
 			.setDescription(
-				`**Saved [${ player.queue.current.title }](${ player.queue.current.uri }) to your DM**`,
+				`**Saved [${ track.title }](${ track.uri }) to your DM**`,
 			)
 			.addFields(
 				{
 					name: "Track Duration",
-					value: `\`${ prettyMilliseconds(player.queue.current.duration, {
+					value: `\`${ prettyMilliseconds(track.duration, {
 						colonNotation: true,
 					}) }\``,
 					inline: true,
 				},
 				{
 					name: "Track Author",
-					value: `\`${ player.queue.current.author }\``,
+					value: `\`${ track.author }\``,
 					inline: true,
 				},
 				{
@@ -62,9 +73,26 @@ const command = new SlashCommand()
 					value: `\`${ interaction.guild }\``,
 					inline: true,
 				},
-			);
+			)
+			.setFooter({ text: "Click 'Play Now' to add this song to your current bot's queue" });
 		
-		interaction.user.send({ embeds: [sendtoDmEmbed] });
+		try {
+			await interaction.user.send({ 
+				embeds: [sendtoDmEmbed],
+				components: [playButton]
+			});
+		} catch (error) {
+			return interaction.reply({
+				embeds: [
+					new MessageEmbed()
+						.setColor("RED")
+						.setDescription(
+							"❌ | **Failed to send DM.** Please make sure your **DMs** are open."
+						),
+				],
+				ephemeral: true,
+			});
+		}
 		
 		return interaction.reply({
 			embeds: [

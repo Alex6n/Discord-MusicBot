@@ -238,7 +238,7 @@ module.exports = async (client, interaction) => {
     const playButton = new MessageActionRow().addComponents(
       new MessageButton()
         .setCustomId(
-          `play_saved:${track.uri || track.url}:${interaction.user.id}`
+          `play_saved|||${track.uri || track.url}|||${interaction.user.id}`
         )
         .setLabel("Play Now")
         .setEmoji("▶️")

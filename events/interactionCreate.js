@@ -41,7 +41,16 @@ module.exports = async (client, interaction) => {
     }
     if (interaction.customId.startsWith("play_saved")) {
       // Handle playing saved songs from DM
-      const [_, trackUri, userId] = interaction.customId.split(":");
+      // Format: play_saved|||trackUri|||userId
+      console.log("[DEBUG] Full customId:", interaction.customId);
+      const parts = interaction.customId.split("|||");
+      console.log("[DEBUG] Parts after split:", parts);
+      console.log("[DEBUG] Parts length:", parts.length);
+      const trackUri = parts[1];
+      const userId = parts[2];
+      console.log("[DEBUG] TrackUri:", trackUri);
+      console.log("[DEBUG] UserId from button:", userId);
+      console.log("[DEBUG] Actual user ID:", interaction.user.id);
 
       // Verify the user clicking is the one who saved the song
       if (interaction.user.id !== userId) {

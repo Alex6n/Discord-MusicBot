@@ -106,8 +106,65 @@ module.exports = async (client, interaction) => {
     } else {
       if (player.paused) {
         player.pause(false);
+
+        // Restore bot status to current track when resumed
+        if (player.queue.current) {
+          try {
+            const track = player.queue.current;
+            let statusText = "the echo";
+
+            if (track.title) {
+              const title = track.title;
+
+              if (title.includes(" - ")) {
+                const parts = title.split(" - ");
+                let artist = parts[0].trim();
+                artist = artist.replace(/\s*\(.*?\)\s*$/g, "").trim();
+                artist = artist.replace(/\s*\[.*?\]\s*$/g, "").trim();
+
+                if (artist && artist.length > 0) {
+                  statusText = artist;
+                }
+              } else {
+                statusText = title;
+                statusText = statusText.replace(/\s*\(.*?\)\s*$/g, "").trim();
+                statusText = statusText.replace(/\s*\[.*?\]\s*$/g, "").trim();
+              }
+            }
+
+            const currentPresence = client.config.presence || {};
+            const currentActivity = currentPresence.activities?.[0] || {};
+
+            await client.user.setPresence({
+              status: currentPresence.status || "online",
+              activities: [
+                {
+                  name: statusText,
+                  type: currentActivity.type || "STREAMING",
+                  url: currentActivity.url || "https://www.twitch.tv/discord",
+                },
+              ],
+            });
+
+            console.log(
+              `[STATUS] Restored to: ${statusText} (track resumed via controller)`
+            );
+          } catch (err) {
+            console.error("[STATUS] Failed to restore status:", err.message);
+          }
+        }
       } else {
         player.pause(true);
+
+        // Reset bot status to default when paused
+        try {
+          await client.user.setPresence(client.config.presence);
+          console.log(
+            "[STATUS] Reset to default (track paused via controller)"
+          );
+        } catch (err) {
+          console.error("[STATUS] Failed to reset status:", err.message);
+        }
       }
       client.warn(
         `Player: ${player.options.guild} | Successfully ${

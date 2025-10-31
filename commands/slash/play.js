@@ -31,6 +31,13 @@ const command = new SlashCommand()
       player.connect();
     }
 
+    // If player is paused, clear the queue and resume
+    if (player.paused) {
+      player.queue.clear();
+      player.pause(false);
+      client.log(`[PLAY] Player was paused - clearing queue and resuming`);
+    }
+
     if (channel.type == "GUILD_STAGE_VOICE") {
       setTimeout(() => {
         if (interaction.guild.members.me.voice.suppress == true) {

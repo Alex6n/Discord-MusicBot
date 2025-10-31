@@ -45,7 +45,7 @@ module.exports = (client) => {
         // Set 24/7 mode
         player.set("twentyFourSeven", true);
         player.set("autoQueue", client.config.autoQueue);
-        player.set("autoPause", false); // Never pause in default channel
+        player.set("autoPause", client.config.autoPause);
         player.set("autoLeave", false);
 
         // Connect to voice channel

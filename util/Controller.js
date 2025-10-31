@@ -237,7 +237,9 @@ module.exports = async (client, interaction) => {
     // Create button to play the saved song
     const playButton = new MessageActionRow().addComponents(
       new MessageButton()
-        .setCustomId(`play_saved:${track.uri || track.url}:${interaction.user.id}`)
+        .setCustomId(
+          `play_saved:${track.uri || track.url}:${interaction.user.id}`
+        )
         .setLabel("Play Now")
         .setEmoji("▶️")
         .setStyle("PRIMARY")
@@ -249,9 +251,7 @@ module.exports = async (client, interaction) => {
         name: "Saved track",
         iconURL: `${interaction.user.displayAvatarURL({ dynamic: true })}`,
       })
-      .setDescription(
-        `**Saved [${track.title}](${track.uri}) to your DM**`
-      )
+      .setDescription(`**Saved [${track.title}](${track.uri}) to your DM**`)
       .addFields(
         {
           name: "Track Duration",
@@ -271,12 +271,14 @@ module.exports = async (client, interaction) => {
           inline: true,
         }
       )
-      .setFooter({ text: "Click 'Play Now' to add this song to your current bot's queue" });
+      .setFooter({
+        text: "Click 'Play Now' to add this song to your current bot's queue",
+      });
 
     try {
-      await interaction.user.send({ 
+      await interaction.user.send({
         embeds: [sendtoDmEmbed],
-        components: [playButton]
+        components: [playButton],
       });
 
       return interaction.reply({

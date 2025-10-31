@@ -78,14 +78,14 @@ const command = new SlashCommand()
           status: currentPresence.status || "online",
           activities: [
             {
-              name: statusText,
+              name: `${statusText} 🎶`,
               type: currentActivity.type || "STREAMING",
               url: currentActivity.url || "https://www.twitch.tv/discord",
             },
           ],
         });
 
-        console.log(`[STATUS] Restored to: ${statusText} (track resumed)`);
+        console.log(`[STATUS] Restored to: ${statusText} 🎶 (track resumed)`);
       } catch (err) {
         console.error("[STATUS] Failed to restore status:", err.message);
       }

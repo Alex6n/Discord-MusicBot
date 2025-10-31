@@ -139,7 +139,7 @@ module.exports = async (client, interaction) => {
               status: currentPresence.status || "online",
               activities: [
                 {
-                  name: statusText,
+                  name: `${statusText} 🎶`,
                   type: currentActivity.type || "STREAMING",
                   url: currentActivity.url || "https://www.twitch.tv/discord",
                 },
@@ -147,7 +147,7 @@ module.exports = async (client, interaction) => {
             });
 
             console.log(
-              `[STATUS] Restored to: ${statusText} (track resumed via controller)`
+              `[STATUS] Restored to: ${statusText} 🎶 (track resumed via controller)`
             );
           } catch (err) {
             console.error("[STATUS] Failed to restore status:", err.message);

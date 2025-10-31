@@ -4,7 +4,7 @@ const SlashCommand = require("../../lib/SlashCommand");
 
 const command = new SlashCommand()
   .setName("autoleave")
-  .setDescription("Automatically leaves when everyone leaves the voice channel (toggle)")
+  .setDescription("Automatically leaves when everyone leaves")
   .setRun(async (client, interaction) => {
     let channel = await client.getChannel(client, interaction);
     if (!channel) return;
@@ -42,10 +42,12 @@ const command = new SlashCommand()
       player.set("autoLeave", false);
     }
     autoLeaveEmbed
-			.setDescription(`**Auto Leave is** \`${!autoLeave ? "ON" : "OFF"}\``)
-			.setFooter({
-			  text: `The player will ${!autoLeave ? "now automatically" : "not automatically"} leave when the voice channel is empty.`
-			});
+      .setDescription(`**Auto Leave is** \`${!autoLeave ? "ON" : "OFF"}\``)
+      .setFooter({
+        text: `The player will ${
+          !autoLeave ? "now automatically" : "not automatically"
+        } leave when the voice channel is empty.`,
+      });
     client.warn(
       `Player: ${player.options.guild} | [${colors.blue(
         "autoLeave"

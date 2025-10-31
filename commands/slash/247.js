@@ -4,7 +4,7 @@ const SlashCommand = require("../../lib/SlashCommand");
 
 const command = new SlashCommand()
   .setName("247")
-  .setDescription("Prevents the bot from ever disconnecting from a VC (toggle)")
+  .setDescription("Prevents the bot from ever disconnecting")
   .setRun(async (client, interaction, options) => {
     // Check if user is admin
     if (
@@ -15,7 +15,7 @@ const command = new SlashCommand()
         embeds: [
           new MessageEmbed()
             .setColor("RED")
-            .setDescription("❌ Only administrators can toggle 24/7 mode."),
+            .setDescription("Only administrators can toggle 24/7 mode."),
         ],
         ephemeral: true,
       });

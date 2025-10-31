@@ -10,7 +10,7 @@ const command = new SlashCommand()
       const joinEmbed = new MessageEmbed()
         .setColor(client.config.embedColor)
         .setDescription(
-          "❌ | **You must be in a voice channel to use this command.**"
+          "**You must be in a voice channel to use this command.**"
         );
       return interaction.reply({ embeds: [joinEmbed], ephemeral: true });
     }
@@ -24,7 +24,7 @@ const command = new SlashCommand()
           new MessageEmbed()
             .setColor("RED")
             .setDescription(
-              "❌ | **I don't have permission to join your voice channel!**"
+              "**I don't have permission to join your voice channel!**"
             ),
         ],
         ephemeral: true,

@@ -4,7 +4,7 @@ const SlashCommand = require("../../lib/SlashCommand");
 
 const command = new SlashCommand()
   .setName("autopause")
-  .setDescription("Automatically pause when everyone leaves the voice channel (toggle)")
+  .setDescription("Automatically pause when everyone leaves")
   .setRun(async (client, interaction) => {
     let channel = await client.getChannel(client, interaction);
     if (!channel) return;
@@ -42,10 +42,12 @@ const command = new SlashCommand()
       player.set("autoPause", false);
     }
     autoPauseEmbed
-			.setDescription(`**Auto Pause is** \`${!autoPause ? "ON" : "OFF"}\``)
-			.setFooter({
-			  text: `The player will ${!autoPause ? "now be automatically" : "no longer be"} paused when everyone leaves the voice channel.`
-			});
+      .setDescription(`**Auto Pause is** \`${!autoPause ? "ON" : "OFF"}\``)
+      .setFooter({
+        text: `The player will ${
+          !autoPause ? "now be automatically" : "no longer be"
+        } paused when everyone leaves the voice channel.`,
+      });
     client.warn(
       `Player: ${player.options.guild} | [${colors.blue(
         "AUTOPAUSE"

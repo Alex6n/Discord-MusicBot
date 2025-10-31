@@ -3,7 +3,7 @@ const { MessageEmbed } = require("discord.js");
 
 const command = new SlashCommand()
   .setName("restart")
-  .setDescription("Restart the bot (Admin only)")
+  .setDescription("Restart the bot")
   .setRun(async (client, interaction, options) => {
     // Check if user is bot owner/admin
     if (

@@ -7,9 +7,10 @@ module.exports = (client) => {
   client.user.setPresence(client.config.presence);
   client.log("Successfully Logged in as " + client.user.tag);
 
-  // Auto-join default voice channel on startup
-  if (client.config.defaultVoiceChannel) {
-    setTimeout(() => {
+  // Wait for manager to be fully ready before auto-joining
+  setTimeout(() => {
+    // Auto-join default voice channel on startup
+    if (client.config.defaultVoiceChannel) {
       const voiceChannel = client.channels.cache.get(
         client.config.defaultVoiceChannel
       );
@@ -78,12 +79,31 @@ module.exports = (client) => {
             });
           }
         }
-      } else if (!player.voiceChannel) {
-        // Player exists but not connected
+      } else if (!player.voiceChannel || !player.connected) {
+        // Player exists but not connected - reconnect it
         player.setVoiceChannel(voiceChannel.id);
         player.connect();
-        client.log(`Reconnected to voice channel: ${voiceChannel.name}`);
+        client.log(
+          `Reconnected to voice channel: ${voiceChannel.name} after restart`
+        );
+
+        // Try to resume if there was a saved track
+        if (player.get("savedTrack")) {
+          const savedTrack = player.get("savedTrack");
+          const savedPosition = player.get("savedPosition") || 0;
+
+          client.log(
+            `Player: ${player.guild} | Restoring track "${savedTrack.title}" at ${savedPosition}ms`
+          );
+
+          setTimeout(() => {
+            player.play();
+            if (savedPosition > 0) {
+              player.seek(savedPosition);
+            }
+          }, 1000);
+        }
       }
-    }, 3000); // Wait 3 seconds for bot to fully initialize
-  }
+    }
+  }, 3000); // Wait 3 seconds for manager and nodes to fully initialize
 };

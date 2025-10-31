@@ -59,15 +59,15 @@ const command = new SlashCommand()
     tempArray.forEach((cmd) => {
       helpEmbed.addFields({ name: cmd.name, value: cmd.description });
     });
-    helpEmbed.addFields({
-      name: "Credits",
-      value:
-        `Discord Music Bot Version: v${
-          require("../../package.json").version
-        }; Build: ${gitHash}` +
-        "\n" +
-        `[✨ Support Server](${client.config.supportServer}) | [Issues](${client.config.Issues}) | [Source](https://github.com/SudhanPlayz/Discord-MusicBot/tree/v5) | [Invite Me](https://discord.com/oauth2/authorize?client_id=${client.config.clientId}&permissions=${client.config.permissions}&scope=bot%20applications.commands)`,
-    });
+    // helpEmbed.addFields({
+    //   name: "Credits",
+    //   value:
+    //     `Discord Music Bot Version: v${
+    //       require("../../package.json").version
+    //     }; Build: ${gitHash}` +
+    //     "\n" +
+    //     `[✨ Support Server](${client.config.supportServer}) | [Issues](${client.config.Issues}) | [Source](https://github.com/SudhanPlayz/Discord-MusicBot/tree/v5) | [Invite Me](https://discord.com/oauth2/authorize?client_id=${client.config.clientId}&permissions=${client.config.permissions}&scope=bot%20applications.commands)`,
+    // });
 
     // Construction of the buttons for the embed
     const getButtons = (pageNo) => {
@@ -115,15 +115,15 @@ const command = new SlashCommand()
           .addFields({ name: cmd.name, value: cmd.description })
           .setFooter({ text: `Page ${pageNo + 1} / ${maxPages}` });
       });
-      helpEmbed.addFields({
-        name: "Credits",
-        value:
-          `Discord Music Bot Version: v${
-            require("../../package.json").version
-          }; Build: ${gitHash}` +
-          "\n" +
-          `[✨ Support Server](${client.config.supportServer}) | [Issues](${client.config.Issues}) | [Source](https://github.com/SudhanPlayz/Discord-MusicBot/tree/v5) | [Invite Me](https://discord.com/oauth2/authorize?client_id=${client.config.clientId}&permissions=${client.config.permissions}&scope=bot%20applications.commands)`,
-      });
+      // helpEmbed.addFields({
+      //   name: "Credits",
+      //   value:
+      //     `Discord Music Bot Version: v${
+      //       require("../../package.json").version
+      //     }; Build: ${gitHash}` +
+      //     "\n" +
+      //     `[✨ Support Server](${client.config.supportServer}) | [Issues](${client.config.Issues}) | [Source](https://github.com/SudhanPlayz/Discord-MusicBot/tree/v5) | [Invite Me](https://discord.com/oauth2/authorize?client_id=${client.config.clientId}&permissions=${client.config.permissions}&scope=bot%20applications.commands)`,
+      // });
       await iter.update({
         embeds: [helpEmbed],
         components: [getButtons(pageNo)],

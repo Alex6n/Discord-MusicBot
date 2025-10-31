@@ -1,8 +1,9 @@
 module.exports = {
   apps: [
     {
-      name: "discord-music-bot",
-      script: "index.js",
+      name: "flint-bot",
+      script: "start-bot.js",
+      args: "flint",
       instances: 1,
       autorestart: true,
       watch: false,
@@ -10,20 +11,51 @@ module.exports = {
       env: {
         NODE_ENV: "production",
       },
-      error_file: "./logs/err.log",
-      out_file: "./logs/out.log",
-      log_file: "./logs/combined.log",
+      error_file: "./logs/flint-err.log",
+      out_file: "./logs/flint-out.log",
+      log_file: "./logs/flint-combined.log",
       time: true,
-
-      // Additional settings for better stability
       min_uptime: "10s",
       max_restarts: 10,
       restart_delay: 4000,
-
-      // Environment variables (can be overridden by .env file)
-      env_production: {
+    },
+    {
+      name: "koko-bot",
+      script: "start-bot.js",
+      args: "koko",
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: "1G",
+      env: {
         NODE_ENV: "production",
       },
+      error_file: "./logs/koko-err.log",
+      out_file: "./logs/koko-out.log",
+      log_file: "./logs/koko-combined.log",
+      time: true,
+      min_uptime: "10s",
+      max_restarts: 10,
+      restart_delay: 4000,
+    },
+    {
+      name: "robin-bot",
+      script: "start-bot.js",
+      args: "robin",
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: "1G",
+      env: {
+        NODE_ENV: "production",
+      },
+      error_file: "./logs/robin-err.log",
+      out_file: "./logs/robin-out.log",
+      log_file: "./logs/robin-combined.log",
+      time: true,
+      min_uptime: "10s",
+      max_restarts: 10,
+      restart_delay: 4000,
     },
   ],
 };

@@ -28,31 +28,25 @@ const command = new SlashCommand()
     // Categorize commands by relevance
     const categories = {
       "🎵 Essential Music": [
+        "summon",
         "play",
+        "nowplaying",
+        "queue",
+        "insert",
+        "stop",
+        "shuffle",
+      ],
+      "📝 Queue Management": [
+        "previous",
         "pause",
         "resume",
         "skip",
-        "stop",
-        "summon",
-        "insert",
-      ],
-      "📝 Queue Management": [
-        "queue",
-        "nowplaying",
         "clear",
-        "shuffle",
         "remove",
         "move",
         "skipto",
       ],
-      "🔁 Playback Control": [
-        "loop",
-        "loopq",
-        "replay",
-        "previous",
-        "seek",
-        "volume",
-      ],
+      "🔁 Playback Control": ["loop", "loopq", "replay", "seek", "volume"],
       "🎛️ Settings": ["247", "autoqueue", "autopause", "autoleave", "filters"],
       "ℹ️ Information": ["help", "ping", "stats", "lyrics", "search", "save"],
       "⚙️ Administration": [
@@ -149,12 +143,12 @@ const command = new SlashCommand()
         new MessageButton()
           .setCustomId("help_cmd_but_2_app")
           .setEmoji("◀️")
-          .setStyle("PRIMARY")
+          .setStyle("SECONDARY")
           .setDisabled(pageNo == 0),
         new MessageButton()
           .setCustomId("help_cmd_but_1_app")
           .setEmoji("▶️")
-          .setStyle("PRIMARY")
+          .setStyle("SECONDARY")
           .setDisabled(pageNo == maxPages - 1)
       );
     };

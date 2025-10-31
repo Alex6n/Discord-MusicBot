@@ -1,5 +1,5 @@
 module.exports = {
-  helpCmdPerPage: 10, //- Number of commands per page of help command
+  helpCmdPerPage: 5, //- Number of commands per page of help command
   lyricsMaxResults: 5, //- Number of results for lyrics command (Do not touch this value if you don't know what you are doing)
   adminId: "394472489641574400", //- Replace with YOUR Discord ID (right-click your name → Copy User ID)
   token: process.env.token || "", //- Bot's Token

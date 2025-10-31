@@ -4,9 +4,7 @@ const escapeMarkdown = require("discord.js").Util.escapeMarkdown;
 
 const command = new SlashCommand()
   .setName("play")
-  .setDescription(
-    "Searches and plays the requested song \nSupports: \nYoutube, Spotify, Soundcloud, Apple Music, Deezer"
-  )
+  .setDescription("Searches and plays the requested song")
   .addStringOption((option) =>
     option
       .setName("query")

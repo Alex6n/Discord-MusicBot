@@ -78,6 +78,10 @@ const command = new SlashCommand()
       .setThumbnail(song.displayThumbnail("maxresdefault"))
       // show the title of the song and link to it
       .setDescription(`[${title}](${song.uri})`);
-    return interaction.reply({ embeds: [embed] });
+
+    return interaction.reply({
+      embeds: [embed],
+      components: [client.createController(player.options.guild, player)],
+    });
   });
 module.exports = command;

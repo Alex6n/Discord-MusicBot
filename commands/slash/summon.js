@@ -3,7 +3,7 @@ const { MessageEmbed } = require("discord.js");
 
 const command = new SlashCommand()
   .setName("summon")
-  .setDescription("Summons the bot to your voice channel.")
+  .setDescription("Summons the bot to your voice channel")
   .setRun(async (client, interaction, options) => {
     // Check if user is in a voice channel
     if (!interaction.member.voice.channel) {

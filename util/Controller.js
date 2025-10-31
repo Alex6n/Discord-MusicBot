@@ -160,6 +160,74 @@ module.exports = async (client, interaction) => {
     return;
   }
 
+  if (property === "Save") {
+    if (!player.queue.current) {
+      return interaction.reply({
+        ephemeral: true,
+        embeds: [
+          new MessageEmbed()
+            .setColor("RED")
+            .setDescription("There is no music playing right now."),
+        ],
+      });
+    }
+
+    const prettyMilliseconds = require("pretty-ms");
+
+    const sendtoDmEmbed = new MessageEmbed()
+      .setColor(client.config.embedColor)
+      .setAuthor({
+        name: "Saved track",
+        iconURL: `${interaction.user.displayAvatarURL({ dynamic: true })}`,
+      })
+      .setDescription(
+        `**Saved [${player.queue.current.title}](${player.queue.current.uri}) to your DM**`
+      )
+      .addFields(
+        {
+          name: "Track Duration",
+          value: `\`${prettyMilliseconds(player.queue.current.duration, {
+            colonNotation: true,
+          })}\``,
+          inline: true,
+        },
+        {
+          name: "Track Author",
+          value: `\`${player.queue.current.author}\``,
+          inline: true,
+        },
+        {
+          name: "Requested Guild",
+          value: `\`${interaction.guild}\``,
+          inline: true,
+        }
+      );
+
+    try {
+      await interaction.user.send({ embeds: [sendtoDmEmbed] });
+
+      return interaction.reply({
+        embeds: [
+          new MessageEmbed()
+            .setColor(client.config.embedColor)
+            .setDescription("❤️ | **Track saved!** Please check your **DMs**."),
+        ],
+        ephemeral: true,
+      });
+    } catch (error) {
+      return interaction.reply({
+        embeds: [
+          new MessageEmbed()
+            .setColor("RED")
+            .setDescription(
+              "❌ | **Failed to send DM.** Please make sure your **DMs** are open."
+            ),
+        ],
+        ephemeral: true,
+      });
+    }
+  }
+
   return interaction.reply({
     ephemeral: true,
     content: "❌ | **Unknown controller option**",

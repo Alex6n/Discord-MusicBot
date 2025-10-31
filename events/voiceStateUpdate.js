@@ -92,6 +92,62 @@ module.exports = async (client, oldState, newState) => {
             members !== player.prevMembers
           ) {
             player.pause(false);
+
+            // Restore bot status to current track when resumed
+            if (player.queue.current) {
+              try {
+                const track = player.queue.current;
+                let statusText = "the echo";
+
+                if (track.title) {
+                  const title = track.title;
+
+                  if (title.includes(" - ")) {
+                    const parts = title.split(" - ");
+                    let artist = parts[0].trim();
+                    artist = artist.replace(/\s*\(.*?\)\s*$/g, "").trim();
+                    artist = artist.replace(/\s*\[.*?\]\s*$/g, "").trim();
+
+                    if (artist && artist.length > 0) {
+                      statusText = artist;
+                    }
+                  } else {
+                    statusText = title;
+                    statusText = statusText
+                      .replace(/\s*\(.*?\)\s*$/g, "")
+                      .trim();
+                    statusText = statusText
+                      .replace(/\s*\[.*?\]\s*$/g, "")
+                      .trim();
+                  }
+                }
+
+                const currentPresence = client.config.presence || {};
+                const currentActivity = currentPresence.activities?.[0] || {};
+
+                await client.user.setPresence({
+                  status: currentPresence.status || "online",
+                  activities: [
+                    {
+                      name: `${statusText} 🎶`,
+                      type: currentActivity.type || "STREAMING",
+                      url:
+                        currentActivity.url || "https://www.twitch.tv/discord",
+                    },
+                  ],
+                });
+
+                console.log(
+                  `[STATUS] Restored to: ${statusText} 🎶 (someone joined, auto-resumed)`
+                );
+              } catch (err) {
+                console.error(
+                  "[STATUS] Failed to restore status:",
+                  err.message
+                );
+              }
+            }
+
             let playerResumed = new MessageEmbed()
               .setColor(client.config.embedColor)
               .setTitle(`Resumed!`, client.config.iconURL)
@@ -124,6 +180,16 @@ module.exports = async (client, oldState, newState) => {
         if (player.get("autoPause") === true) {
           if (members === 0 && !player.paused && player.playing) {
             player.pause(true);
+
+            // Reset bot status to default when paused
+            try {
+              await client.user.setPresence(client.config.presence);
+              console.log(
+                "[STATUS] Reset to default (everyone left, auto-paused)"
+              );
+            } catch (err) {
+              console.error("[STATUS] Failed to reset status:", err.message);
+            }
 
             let playerPaused = new MessageEmbed()
               .setColor(client.config.embedColor)

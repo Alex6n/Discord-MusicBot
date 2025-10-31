@@ -135,58 +135,62 @@ module.exports = async (client, interaction) => {
         }
 
         const track = res.tracks[0];
-        player.queue.add(track);
 
-        // If player is paused, resume it (same as /play command)
+        // If player is paused, resume it BEFORE adding to queue
         if (player.paused) {
           player.pause(false);
-          client.log(`[PLAY_SAVED] Player was paused - resuming`);
+          client.log(`[PLAY_SAVED] Player was paused - resuming playback`);
 
-          // Restore bot status when resuming
-          try {
-            const currentTrack = player.queue.current || track;
-            let statusText = "the echo";
+          // Restore bot status when resuming (use current track that was paused)
+          if (player.queue.current) {
+            try {
+              const currentTrack = player.queue.current;
+              let statusText = "the echo";
 
-            if (currentTrack.title) {
-              const title = currentTrack.title;
+              if (currentTrack.title) {
+                const title = currentTrack.title;
 
-              if (title.includes(" - ")) {
-                const parts = title.split(" - ");
-                let artist = parts[0].trim();
-                artist = artist.replace(/\s*\(.*?\)\s*$/g, "").trim();
-                artist = artist.replace(/\s*\[.*?\]\s*$/g, "").trim();
+                if (title.includes(" - ")) {
+                  const parts = title.split(" - ");
+                  let artist = parts[0].trim();
+                  artist = artist.replace(/\s*\(.*?\)\s*$/g, "").trim();
+                  artist = artist.replace(/\s*\[.*?\]\s*$/g, "").trim();
 
-                if (artist && artist.length > 0) {
-                  statusText = artist;
+                  if (artist && artist.length > 0) {
+                    statusText = artist;
+                  }
+                } else {
+                  statusText = title;
+                  statusText = statusText.replace(/\s*\(.*?\)\s*$/g, "").trim();
+                  statusText = statusText.replace(/\s*\[.*?\]\s*$/g, "").trim();
                 }
-              } else {
-                statusText = title;
-                statusText = statusText.replace(/\s*\(.*?\)\s*$/g, "").trim();
-                statusText = statusText.replace(/\s*\[.*?\]\s*$/g, "").trim();
               }
+
+              const currentPresence = client.config.presence || {};
+              const currentActivity = currentPresence.activities?.[0] || {};
+
+              await client.user.setPresence({
+                status: currentPresence.status || "online",
+                activities: [
+                  {
+                    name: `${statusText} 🎶`,
+                    type: currentActivity.type || "STREAMING",
+                    url: currentActivity.url || "https://www.twitch.tv/discord",
+                  },
+                ],
+              });
+
+              console.log(
+                `[STATUS] Restored to: ${statusText} 🎶 (resumed via saved song)`
+              );
+            } catch (err) {
+              console.error("[STATUS] Failed to restore status:", err.message);
             }
-
-            const currentPresence = client.config.presence || {};
-            const currentActivity = currentPresence.activities?.[0] || {};
-
-            await client.user.setPresence({
-              status: currentPresence.status || "online",
-              activities: [
-                {
-                  name: `${statusText} 🎶`,
-                  type: currentActivity.type || "STREAMING",
-                  url: currentActivity.url || "https://www.twitch.tv/discord",
-                },
-              ],
-            });
-
-            console.log(
-              `[STATUS] Restored to: ${statusText} 🎶 (resumed via saved song)`
-            );
-          } catch (err) {
-            console.error("[STATUS] Failed to restore status:", err.message);
           }
         }
+
+        // Now add the saved track to queue
+        player.queue.add(track);
 
         if (!player.playing && !player.paused) {
           player.play();

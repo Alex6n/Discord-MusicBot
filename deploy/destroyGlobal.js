@@ -8,9 +8,9 @@ const token = process.env[`${botName}_TOKEN`];
 // Validate bot configuration
 if (!token) {
   console.error(`❌ Bot "${botName}" not found in .env file`);
-  console.log('\nAvailable bots: FLINT, KOKO, ROBIN');
-  console.log('\nUsage: node deploy/destroyGlobal.js <botname>');
-  console.log('Example: node deploy/destroyGlobal.js FLINT');
+  console.log("\nAvailable bots: FLINT, KOKO, ROBIN");
+  console.log("\nUsage: node deploy/destroyGlobal.js <botname>");
+  console.log("Example: node deploy/destroyGlobal.js FLINT");
   process.exit(1);
 }
 
@@ -29,16 +29,22 @@ client.on("ready", async () => {
     process.exit();
   }
 
-  console.log(`Found ${commands.size} global commands for ${botName}. Deleting...`);
+  console.log(
+    `Found ${commands.size} global commands for ${botName}. Deleting...`
+  );
   let deletedCount = 0;
 
   commands.forEach(async (command) => {
     await client.application.commands.delete(command.id);
-    console.log(`Slash Command with ID ${command.id} (${command.name}) has been deleted.`);
+    console.log(
+      `Slash Command with ID ${command.id} (${command.name}) has been deleted.`
+    );
     deletedCount++;
 
     if (deletedCount === commands.size) {
-      console.log(`✅ Successfully deleted all global slash commands for ${botName}.`);
+      console.log(
+        `✅ Successfully deleted all global slash commands for ${botName}.`
+      );
       process.exit();
     }
   });
